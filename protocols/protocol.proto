@@ -1,0 +1,42 @@
+syntax ="proto3";
+package protocol;
+
+option go_package="/protocol";
+
+/**
+*    -----------------------------------------------------
+*    |  消息总长度  |  消息体长度  |  消息头  |    消息体     | 
+*    -----------------------------------------------------
+*/
+
+message Header {
+    string cmd = 1; // 消息id
+    uint32 sn = 2; // 消息序列号
+}
+
+// 登录
+message LoginReq {
+    string account = 1;  /** 账号 */
+}
+
+message LoginRes {
+    int32 code = 1;
+    uint32 uid = 2;   /** 用户id */
+}
+
+// 心跳
+message HeartReq {
+}
+
+message HeartRes {
+    int32 code = 1;
+    int64 time = 2;   /** 服务器当前时间(毫秒) */
+}
+
+/**
+* 玩家踢下线
+*/
+message NotifyKickout {
+    int32 reason = 1;
+    string msg = 2; /** 踢下线原因 */
+}
