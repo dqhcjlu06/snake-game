@@ -172,7 +172,12 @@ func (conn *Connection) gorecv() {
 	case "ws":
 		err = conn.readWsUtil()
 	case "kcp":
-		err = conn.readKcpUtil()
+		for {
+			err = conn.readKcpUtil()
+			if err != nil {
+				break
+			}
+		}
 	}
 
 	log.Default().Printf("conn recv data error %s\n", err.Error())
@@ -261,7 +266,7 @@ func (conn *Connection) readKcpUtil() error {
 	if length > 65536 {
 		return errors.New("pack too big")
 	}
-	data := make([]byte, length)
+	data := make([]byte, length-4)
 	if _, err := io.ReadFull(conn.kcpConn, data); err != nil {
 		return err
 	}

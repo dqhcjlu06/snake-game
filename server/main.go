@@ -27,7 +27,7 @@ func main() {
 
 	go func() {
 		// kcp server
-		err := srv.ListenAndServeKcpX(":8081")
+		err := srv.ListenAndServeKcpX(":8081", 2, 2)
 		if err != nil {
 			panic(err)
 		}

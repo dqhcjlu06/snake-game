@@ -36,8 +36,8 @@ func (s *Server) ListenAndServeWsx(relPath string, port string, certFile string,
 	}
 }
 
-func (s *Server) ListenAndServeKcpX(addr string) error {
-	if listener, err := kcp.ListenWithOptions(addr, nil, 0, 0); err != nil {
+func (s *Server) ListenAndServeKcpX(addr string, dataShards, parityShards int) error {
+	if listener, err := kcp.ListenWithOptions(addr, nil, dataShards, parityShards); err != nil {
 		return err
 	} else {
 		listener.SetDSCP(46)
