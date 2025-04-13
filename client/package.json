@@ -1,0 +1,17 @@
+{
+  "name": "client",
+  "uuid": "15eedb04-6bec-4ee4-8a84-7bbb0fea11a0",
+  "version": "3.0.0",
+  "_sourceId": "c30b28da-749e-479b-bcb6-cecd8d7be9e3",
+  "creator": {
+    "version": "3.8.3"
+  },
+  "scripts": {
+    "buildprotojs": "pbjs --path ../protocols -t static-module -w commonjs -o assets/scripts/protocols/protocol.js protocol.proto",
+    "buildprotots": "pbts --o assets/scripts/protocols/protocol.d.ts assets/scripts/protocols/protocol.js",
+    "buildproto": "npm run buildprotojs && npm run buildprotots"
+  },
+  "dependencies": {
+    "protobufjs": "^7.4.0"
+  }
+}

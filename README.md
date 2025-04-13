@@ -12,3 +12,20 @@
 
 ▶ 通信协议：支持WebSocket/KCP
 * 不支持kcp的情况下， 可以无感使用WebSocket
+
+## protocol协议
+
+1. 服务端
+protocols目录下运行
+```
+protoc --go_out=../server --proto_path=. protocol.proto
+```
+
+2. 客户端
+
+```
+npm install
+
+npm run buildproto
+```
+
