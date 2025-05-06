@@ -10,18 +10,19 @@ option go_package="/protocol";
 */
 
 message Header {
-    string cmd = 1; // 消息id
-    uint32 sn = 2; // 消息序列号
+   string cmd = 1; // 消息id
+   uint32 sn = 2; // 消息序列号
 }
 
 // 登录
 message LoginReq {
-    string account = 1;  /** 账号 */
+   string account = 1;  /** 账号 */
 }
 
 message LoginRes {
-    int32 code = 1;
-    uint32 uid = 2;   /** 用户id */
+   int32 code = 1;
+   uint32 pid = 2;   /** 用户id */
+   int64  time = 3; /** 服务器当前时间(毫秒) */
 }
 
 // 心跳
@@ -29,14 +30,123 @@ message HeartReq {
 }
 
 message HeartRes {
-    int32 code = 1;
-    int64 time = 2;   /** 服务器当前时间(毫秒) */
+   int32 code = 1;
+   int64 time = 2;   /** 服务器当前时间(毫秒) */
 }
 
 /**
 * 玩家踢下线
 */
 message NotifyKickout {
-    int32 reason = 1;
-    string msg = 2; /** 踢下线原因 */
+   int32 reason = 1;
+   string msg = 2; /** 踢下线原因 */
 }
+
+
+message NotifyGamePlayerEnter {
+   uint32 pid = 1;
+   bool isPlayer = 2;
+   bool ready = 3;
+}
+
+/**
+* 进入游戏
+*/
+message EnterGameReq {
+   string roomno = 1;
+   bool isPlayer = 2;  // 是否玩家，true : 玩家， false: 观战者
+   int32 seat = 3;
+}
+
+message EnterGameRes {
+   int32 code = 1;
+   repeated NotifyGamePlayerEnter players = 2; 
+   uint32 currFrameIndex = 3;  // 当前帧
+}
+
+message SendReadyReq {
+}
+
+message SendReadyRes {
+   int32 code = 2;
+}
+
+message PlayerReadyStatus {
+   uint32 pid = 1;
+   bool ready = 2;
+}
+
+message NotifyPlayerReadyStatus {
+   repeated PlayerReadyStatus players = 1;
+}
+
+// 游戏开始
+message NotifyGameStart {}
+
+// 发送方向操作
+message SendDirectionReq {
+  int32 direction = 1;
+}
+
+message SendDirectionRes {
+  int32 code = 1;
+}
+
+message Vec2 {
+   int32 x = 1;
+   int32 y = 2;
+}
+
+message PlayerFrame {
+   uint32 pid = 1;
+   int32 direction = 2;
+   Vec2 newfood = 3;  
+}
+
+message BroadcastFrame {
+   uint32 index = 1;
+   repeated PlayerFrame players = 2;
+}
+
+message GetIndexFrameReq {
+  uint32 index = 1;
+}
+
+message GetIndexFrameRes {
+   int32 code = 1;
+   BroadcastFrame frame = 2;
+}
+
+message EatFoodReq {
+  Vec2 food = 1;
+}
+
+message EatFoodRes {
+  int32 code = 1;
+}
+
+// 游戏结束
+message GamePlayerEndReq {
+}
+
+message GamePlayerEndRes {
+  int32 code = 1;
+}
+
+message NotifyGamePlayerEnd {
+  uint32 pid = 1;
+}
+
+message NotifyGameOver {
+}
+
+message SysncFramesReq {
+  uint32 start = 1;
+  uint32 end = 2;
+}
+
+message SysncFramesRes {
+  int32 code =1;
+  repeated BroadcastFrame frames = 2;
+}
+

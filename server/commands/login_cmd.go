@@ -3,6 +3,7 @@ package commands
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"com.cocos/kcp/network"
 	"com.cocos/kcp/protocol"
@@ -46,11 +47,21 @@ func register_login_cmd(srv *network.Server) {
 			}
 		} else {
 			id = genUserID()
+			map_user_account_ta[req.Account] = id
 		}
 
 		conn.Manager.Add(id, conn)
 		res.Code = 0
-		res.Uid = id
+		res.Pid = id
+	})
+
+	srv.SetMsgListener("HeartReq", func(conn *network.Connection, header *protocol.Header, body []byte) {
+		res := protocol.HeartRes{
+			Code: 0,
+			Time: time.Now().UnixMilli(),
+		}
+
+		conn.Response("HeartRes", header, &res)
 	})
 }
 

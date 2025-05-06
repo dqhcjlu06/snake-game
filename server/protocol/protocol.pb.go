@@ -129,7 +129,8 @@ type LoginRes struct {
 	unknownFields protoimpl.UnknownFields
 
 	Code int32  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Uid  uint32 `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"` //* 用户id
+	Pid  uint32 `protobuf:"varint,2,opt,name=pid,proto3" json:"pid,omitempty"`   //* 用户id
+	Time int64  `protobuf:"varint,3,opt,name=time,proto3" json:"time,omitempty"` //* 服务器当前时间(毫秒)
 }
 
 func (x *LoginRes) Reset() {
@@ -171,9 +172,16 @@ func (x *LoginRes) GetCode() int32 {
 	return 0
 }
 
-func (x *LoginRes) GetUid() uint32 {
+func (x *LoginRes) GetPid() uint32 {
 	if x != nil {
-		return x.Uid
+		return x.Pid
+	}
+	return 0
+}
+
+func (x *LoginRes) GetTime() int64 {
+	if x != nil {
+		return x.Time
 	}
 	return 0
 }
@@ -329,6 +337,1168 @@ func (x *NotifyKickout) GetMsg() string {
 	return ""
 }
 
+type NotifyGamePlayerEnter struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Pid      uint32 `protobuf:"varint,1,opt,name=pid,proto3" json:"pid,omitempty"`
+	IsPlayer bool   `protobuf:"varint,2,opt,name=isPlayer,proto3" json:"isPlayer,omitempty"`
+	Ready    bool   `protobuf:"varint,3,opt,name=ready,proto3" json:"ready,omitempty"`
+}
+
+func (x *NotifyGamePlayerEnter) Reset() {
+	*x = NotifyGamePlayerEnter{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NotifyGamePlayerEnter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyGamePlayerEnter) ProtoMessage() {}
+
+func (x *NotifyGamePlayerEnter) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyGamePlayerEnter.ProtoReflect.Descriptor instead.
+func (*NotifyGamePlayerEnter) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *NotifyGamePlayerEnter) GetPid() uint32 {
+	if x != nil {
+		return x.Pid
+	}
+	return 0
+}
+
+func (x *NotifyGamePlayerEnter) GetIsPlayer() bool {
+	if x != nil {
+		return x.IsPlayer
+	}
+	return false
+}
+
+func (x *NotifyGamePlayerEnter) GetReady() bool {
+	if x != nil {
+		return x.Ready
+	}
+	return false
+}
+
+// *
+// 进入游戏
+type EnterGameReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Roomno   string `protobuf:"bytes,1,opt,name=roomno,proto3" json:"roomno,omitempty"`
+	IsPlayer bool   `protobuf:"varint,2,opt,name=isPlayer,proto3" json:"isPlayer,omitempty"` // 是否玩家，true : 玩家， false: 观战者
+	Seat     int32  `protobuf:"varint,3,opt,name=seat,proto3" json:"seat,omitempty"`
+}
+
+func (x *EnterGameReq) Reset() {
+	*x = EnterGameReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EnterGameReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnterGameReq) ProtoMessage() {}
+
+func (x *EnterGameReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnterGameReq.ProtoReflect.Descriptor instead.
+func (*EnterGameReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *EnterGameReq) GetRoomno() string {
+	if x != nil {
+		return x.Roomno
+	}
+	return ""
+}
+
+func (x *EnterGameReq) GetIsPlayer() bool {
+	if x != nil {
+		return x.IsPlayer
+	}
+	return false
+}
+
+func (x *EnterGameReq) GetSeat() int32 {
+	if x != nil {
+		return x.Seat
+	}
+	return 0
+}
+
+type EnterGameRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code           int32                    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Players        []*NotifyGamePlayerEnter `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
+	CurrFrameIndex uint32                   `protobuf:"varint,3,opt,name=currFrameIndex,proto3" json:"currFrameIndex,omitempty"` // 当前帧
+}
+
+func (x *EnterGameRes) Reset() {
+	*x = EnterGameRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EnterGameRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnterGameRes) ProtoMessage() {}
+
+func (x *EnterGameRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnterGameRes.ProtoReflect.Descriptor instead.
+func (*EnterGameRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *EnterGameRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *EnterGameRes) GetPlayers() []*NotifyGamePlayerEnter {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+func (x *EnterGameRes) GetCurrFrameIndex() uint32 {
+	if x != nil {
+		return x.CurrFrameIndex
+	}
+	return 0
+}
+
+type SendReadyReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SendReadyReq) Reset() {
+	*x = SendReadyReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendReadyReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendReadyReq) ProtoMessage() {}
+
+func (x *SendReadyReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendReadyReq.ProtoReflect.Descriptor instead.
+func (*SendReadyReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{9}
+}
+
+type SendReadyRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code int32 `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *SendReadyRes) Reset() {
+	*x = SendReadyRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendReadyRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendReadyRes) ProtoMessage() {}
+
+func (x *SendReadyRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendReadyRes.ProtoReflect.Descriptor instead.
+func (*SendReadyRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SendReadyRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+type PlayerReadyStatus struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Pid   uint32 `protobuf:"varint,1,opt,name=pid,proto3" json:"pid,omitempty"`
+	Ready bool   `protobuf:"varint,2,opt,name=ready,proto3" json:"ready,omitempty"`
+}
+
+func (x *PlayerReadyStatus) Reset() {
+	*x = PlayerReadyStatus{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PlayerReadyStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlayerReadyStatus) ProtoMessage() {}
+
+func (x *PlayerReadyStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlayerReadyStatus.ProtoReflect.Descriptor instead.
+func (*PlayerReadyStatus) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *PlayerReadyStatus) GetPid() uint32 {
+	if x != nil {
+		return x.Pid
+	}
+	return 0
+}
+
+func (x *PlayerReadyStatus) GetReady() bool {
+	if x != nil {
+		return x.Ready
+	}
+	return false
+}
+
+type NotifyPlayerReadyStatus struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Players []*PlayerReadyStatus `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
+}
+
+func (x *NotifyPlayerReadyStatus) Reset() {
+	*x = NotifyPlayerReadyStatus{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NotifyPlayerReadyStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyPlayerReadyStatus) ProtoMessage() {}
+
+func (x *NotifyPlayerReadyStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyPlayerReadyStatus.ProtoReflect.Descriptor instead.
+func (*NotifyPlayerReadyStatus) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *NotifyPlayerReadyStatus) GetPlayers() []*PlayerReadyStatus {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+// 游戏开始
+type NotifyGameStart struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NotifyGameStart) Reset() {
+	*x = NotifyGameStart{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NotifyGameStart) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyGameStart) ProtoMessage() {}
+
+func (x *NotifyGameStart) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyGameStart.ProtoReflect.Descriptor instead.
+func (*NotifyGameStart) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{13}
+}
+
+// 发送方向操作
+type SendDirectionReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Direction int32 `protobuf:"varint,1,opt,name=direction,proto3" json:"direction,omitempty"`
+}
+
+func (x *SendDirectionReq) Reset() {
+	*x = SendDirectionReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendDirectionReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendDirectionReq) ProtoMessage() {}
+
+func (x *SendDirectionReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendDirectionReq.ProtoReflect.Descriptor instead.
+func (*SendDirectionReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *SendDirectionReq) GetDirection() int32 {
+	if x != nil {
+		return x.Direction
+	}
+	return 0
+}
+
+type SendDirectionRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code int32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *SendDirectionRes) Reset() {
+	*x = SendDirectionRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendDirectionRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendDirectionRes) ProtoMessage() {}
+
+func (x *SendDirectionRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendDirectionRes.ProtoReflect.Descriptor instead.
+func (*SendDirectionRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *SendDirectionRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+type Vec2 struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	X int32 `protobuf:"varint,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y int32 `protobuf:"varint,2,opt,name=y,proto3" json:"y,omitempty"`
+}
+
+func (x *Vec2) Reset() {
+	*x = Vec2{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Vec2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Vec2) ProtoMessage() {}
+
+func (x *Vec2) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Vec2.ProtoReflect.Descriptor instead.
+func (*Vec2) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *Vec2) GetX() int32 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *Vec2) GetY() int32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+type PlayerFrame struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Pid       uint32 `protobuf:"varint,1,opt,name=pid,proto3" json:"pid,omitempty"`
+	Direction int32  `protobuf:"varint,2,opt,name=direction,proto3" json:"direction,omitempty"`
+	Newfood   *Vec2  `protobuf:"bytes,3,opt,name=newfood,proto3" json:"newfood,omitempty"`
+}
+
+func (x *PlayerFrame) Reset() {
+	*x = PlayerFrame{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PlayerFrame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlayerFrame) ProtoMessage() {}
+
+func (x *PlayerFrame) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlayerFrame.ProtoReflect.Descriptor instead.
+func (*PlayerFrame) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *PlayerFrame) GetPid() uint32 {
+	if x != nil {
+		return x.Pid
+	}
+	return 0
+}
+
+func (x *PlayerFrame) GetDirection() int32 {
+	if x != nil {
+		return x.Direction
+	}
+	return 0
+}
+
+func (x *PlayerFrame) GetNewfood() *Vec2 {
+	if x != nil {
+		return x.Newfood
+	}
+	return nil
+}
+
+type BroadcastFrame struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index   uint32         `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Players []*PlayerFrame `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
+}
+
+func (x *BroadcastFrame) Reset() {
+	*x = BroadcastFrame{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BroadcastFrame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BroadcastFrame) ProtoMessage() {}
+
+func (x *BroadcastFrame) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BroadcastFrame.ProtoReflect.Descriptor instead.
+func (*BroadcastFrame) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *BroadcastFrame) GetIndex() uint32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *BroadcastFrame) GetPlayers() []*PlayerFrame {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+type GetIndexFrameReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index uint32 `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+}
+
+func (x *GetIndexFrameReq) Reset() {
+	*x = GetIndexFrameReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetIndexFrameReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetIndexFrameReq) ProtoMessage() {}
+
+func (x *GetIndexFrameReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetIndexFrameReq.ProtoReflect.Descriptor instead.
+func (*GetIndexFrameReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GetIndexFrameReq) GetIndex() uint32 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+type GetIndexFrameRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code  int32           `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Frame *BroadcastFrame `protobuf:"bytes,2,opt,name=frame,proto3" json:"frame,omitempty"`
+}
+
+func (x *GetIndexFrameRes) Reset() {
+	*x = GetIndexFrameRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[20]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetIndexFrameRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetIndexFrameRes) ProtoMessage() {}
+
+func (x *GetIndexFrameRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[20]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetIndexFrameRes.ProtoReflect.Descriptor instead.
+func (*GetIndexFrameRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetIndexFrameRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *GetIndexFrameRes) GetFrame() *BroadcastFrame {
+	if x != nil {
+		return x.Frame
+	}
+	return nil
+}
+
+type EatFoodReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Food *Vec2 `protobuf:"bytes,1,opt,name=food,proto3" json:"food,omitempty"`
+}
+
+func (x *EatFoodReq) Reset() {
+	*x = EatFoodReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[21]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EatFoodReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EatFoodReq) ProtoMessage() {}
+
+func (x *EatFoodReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[21]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EatFoodReq.ProtoReflect.Descriptor instead.
+func (*EatFoodReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *EatFoodReq) GetFood() *Vec2 {
+	if x != nil {
+		return x.Food
+	}
+	return nil
+}
+
+type EatFoodRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code int32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *EatFoodRes) Reset() {
+	*x = EatFoodRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[22]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EatFoodRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EatFoodRes) ProtoMessage() {}
+
+func (x *EatFoodRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[22]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EatFoodRes.ProtoReflect.Descriptor instead.
+func (*EatFoodRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *EatFoodRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+// 游戏结束
+type GamePlayerEndReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GamePlayerEndReq) Reset() {
+	*x = GamePlayerEndReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[23]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GamePlayerEndReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GamePlayerEndReq) ProtoMessage() {}
+
+func (x *GamePlayerEndReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[23]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GamePlayerEndReq.ProtoReflect.Descriptor instead.
+func (*GamePlayerEndReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{23}
+}
+
+type GamePlayerEndRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code int32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *GamePlayerEndRes) Reset() {
+	*x = GamePlayerEndRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[24]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GamePlayerEndRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GamePlayerEndRes) ProtoMessage() {}
+
+func (x *GamePlayerEndRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[24]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GamePlayerEndRes.ProtoReflect.Descriptor instead.
+func (*GamePlayerEndRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GamePlayerEndRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+type NotifyGamePlayerEnd struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Pid uint32 `protobuf:"varint,1,opt,name=pid,proto3" json:"pid,omitempty"`
+}
+
+func (x *NotifyGamePlayerEnd) Reset() {
+	*x = NotifyGamePlayerEnd{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[25]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NotifyGamePlayerEnd) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyGamePlayerEnd) ProtoMessage() {}
+
+func (x *NotifyGamePlayerEnd) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[25]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyGamePlayerEnd.ProtoReflect.Descriptor instead.
+func (*NotifyGamePlayerEnd) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *NotifyGamePlayerEnd) GetPid() uint32 {
+	if x != nil {
+		return x.Pid
+	}
+	return 0
+}
+
+type NotifyGameOver struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NotifyGameOver) Reset() {
+	*x = NotifyGameOver{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[26]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NotifyGameOver) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyGameOver) ProtoMessage() {}
+
+func (x *NotifyGameOver) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[26]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyGameOver.ProtoReflect.Descriptor instead.
+func (*NotifyGameOver) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{26}
+}
+
+type SysncFramesReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Start uint32 `protobuf:"varint,1,opt,name=start,proto3" json:"start,omitempty"`
+	End   uint32 `protobuf:"varint,2,opt,name=end,proto3" json:"end,omitempty"`
+}
+
+func (x *SysncFramesReq) Reset() {
+	*x = SysncFramesReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[27]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SysncFramesReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SysncFramesReq) ProtoMessage() {}
+
+func (x *SysncFramesReq) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[27]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SysncFramesReq.ProtoReflect.Descriptor instead.
+func (*SysncFramesReq) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *SysncFramesReq) GetStart() uint32 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
+}
+
+func (x *SysncFramesReq) GetEnd() uint32 {
+	if x != nil {
+		return x.End
+	}
+	return 0
+}
+
+type SysncFramesRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code   int32             `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Frames []*BroadcastFrame `protobuf:"bytes,2,rep,name=frames,proto3" json:"frames,omitempty"`
+}
+
+func (x *SysncFramesRes) Reset() {
+	*x = SysncFramesRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protocol_proto_msgTypes[28]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SysncFramesRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SysncFramesRes) ProtoMessage() {}
+
+func (x *SysncFramesRes) ProtoReflect() protoreflect.Message {
+	mi := &file_protocol_proto_msgTypes[28]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SysncFramesRes.ProtoReflect.Descriptor instead.
+func (*SysncFramesRes) Descriptor() ([]byte, []int) {
+	return file_protocol_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *SysncFramesRes) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *SysncFramesRes) GetFrames() []*BroadcastFrame {
+	if x != nil {
+		return x.Frames
+	}
+	return nil
+}
+
 var File_protocol_proto protoreflect.FileDescriptor
 
 var file_protocol_proto_rawDesc = []byte{
@@ -338,19 +1508,104 @@ var file_protocol_proto_rawDesc = []byte{
 	0x09, 0x52, 0x03, 0x63, 0x6d, 0x64, 0x12, 0x0e, 0x0a, 0x02, 0x73, 0x6e, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x0d, 0x52, 0x02, 0x73, 0x6e, 0x22, 0x24, 0x0a, 0x08, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52,
 	0x65, 0x71, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x30, 0x0a, 0x08,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x44, 0x0a, 0x08,
 	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x10, 0x0a, 0x03,
-	0x75, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x75, 0x69, 0x64, 0x22, 0x0a,
-	0x0a, 0x08, 0x48, 0x65, 0x61, 0x72, 0x74, 0x52, 0x65, 0x71, 0x22, 0x32, 0x0a, 0x08, 0x48, 0x65,
-	0x61, 0x72, 0x74, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x69,
-	0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x22, 0x39,
-	0x0a, 0x0d, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x4b, 0x69, 0x63, 0x6b, 0x6f, 0x75, 0x74, 0x12,
-	0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x42, 0x0b, 0x5a, 0x09, 0x2f, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x70, 0x69, 0x64, 0x12, 0x12,
+	0x0a, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x74, 0x69,
+	0x6d, 0x65, 0x22, 0x0a, 0x0a, 0x08, 0x48, 0x65, 0x61, 0x72, 0x74, 0x52, 0x65, 0x71, 0x22, 0x32,
+	0x0a, 0x08, 0x48, 0x65, 0x61, 0x72, 0x74, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f,
+	0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x12,
+	0x0a, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x74, 0x69,
+	0x6d, 0x65, 0x22, 0x39, 0x0a, 0x0d, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x4b, 0x69, 0x63, 0x6b,
+	0x6f, 0x75, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x6d,
+	0x73, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x22, 0x5b, 0x0a,
+	0x15, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x47, 0x61, 0x6d, 0x65, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x45, 0x6e, 0x74, 0x65, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x70, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x03, 0x70, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x22, 0x56, 0x0a, 0x0c, 0x45, 0x6e,
+	0x74, 0x65, 0x72, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x6f,
+	0x6f, 0x6d, 0x6e, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x6f, 0x6f, 0x6d,
+	0x6e, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x12,
+	0x0a, 0x04, 0x73, 0x65, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x73, 0x65,
+	0x61, 0x74, 0x22, 0x85, 0x01, 0x0a, 0x0c, 0x45, 0x6e, 0x74, 0x65, 0x72, 0x47, 0x61, 0x6d, 0x65,
+	0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x39, 0x0a, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x63, 0x6f, 0x6c, 0x2e, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x47, 0x61, 0x6d, 0x65, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x45, 0x6e, 0x74, 0x65, 0x72, 0x52, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x73, 0x12, 0x26, 0x0a, 0x0e, 0x63, 0x75, 0x72, 0x72, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x49,
+	0x6e, 0x64, 0x65, 0x78, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0e, 0x63, 0x75, 0x72, 0x72,
+	0x46, 0x72, 0x61, 0x6d, 0x65, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x22, 0x0e, 0x0a, 0x0c, 0x53, 0x65,
+	0x6e, 0x64, 0x52, 0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x71, 0x22, 0x22, 0x0a, 0x0c, 0x53, 0x65,
+	0x6e, 0x64, 0x52, 0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f,
+	0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x3b,
+	0x0a, 0x11, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x61, 0x64, 0x79, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x70, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x03, 0x70, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x22, 0x50, 0x0a, 0x17, 0x4e,
+	0x6f, 0x74, 0x69, 0x66, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x61, 0x64, 0x79,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x35, 0x0a, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63,
+	0x6f, 0x6c, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x61, 0x64, 0x79, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x52, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x22, 0x11, 0x0a,
+	0x0f, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x22, 0x30, 0x0a, 0x10, 0x53, 0x65, 0x6e, 0x64, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x71, 0x12, 0x1c, 0x0a, 0x09, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x09, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0x26, 0x0a, 0x10, 0x53, 0x65, 0x6e, 0x64, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x22, 0x0a, 0x04, 0x56, 0x65,
+	0x63, 0x32, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x01, 0x78,
+	0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x01, 0x79, 0x22, 0x67,
+	0x0a, 0x0b, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x12, 0x10, 0x0a,
+	0x03, 0x70, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x70, 0x69, 0x64, 0x12,
+	0x1c, 0x0a, 0x09, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x09, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x28, 0x0a,
+	0x07, 0x6e, 0x65, 0x77, 0x66, 0x6f, 0x6f, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x56, 0x65, 0x63, 0x32, 0x52, 0x07,
+	0x6e, 0x65, 0x77, 0x66, 0x6f, 0x6f, 0x64, 0x22, 0x57, 0x0a, 0x0e, 0x42, 0x72, 0x6f, 0x61, 0x64,
+	0x63, 0x61, 0x73, 0x74, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64,
+	0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x12,
+	0x2f, 0x0a, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x15, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x52, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73,
+	0x22, 0x28, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x46, 0x72, 0x61, 0x6d,
+	0x65, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x22, 0x56, 0x0a, 0x10, 0x47, 0x65,
+	0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x12, 0x12,
+	0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f,
+	0x64, 0x65, 0x12, 0x2e, 0x0a, 0x05, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x18, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x42, 0x72, 0x6f,
+	0x61, 0x64, 0x63, 0x61, 0x73, 0x74, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x52, 0x05, 0x66, 0x72, 0x61,
+	0x6d, 0x65, 0x22, 0x30, 0x0a, 0x0a, 0x45, 0x61, 0x74, 0x46, 0x6f, 0x6f, 0x64, 0x52, 0x65, 0x71,
+	0x12, 0x22, 0x0a, 0x04, 0x66, 0x6f, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x56, 0x65, 0x63, 0x32, 0x52, 0x04,
+	0x66, 0x6f, 0x6f, 0x64, 0x22, 0x20, 0x0a, 0x0a, 0x45, 0x61, 0x74, 0x46, 0x6f, 0x6f, 0x64, 0x52,
+	0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x12, 0x0a, 0x10, 0x47, 0x61, 0x6d, 0x65, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x45, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x22, 0x26, 0x0a, 0x10, 0x47, 0x61,
+	0x6d, 0x65, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x45, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x12, 0x12,
+	0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f,
+	0x64, 0x65, 0x22, 0x27, 0x0a, 0x13, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x47, 0x61, 0x6d, 0x65,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x45, 0x6e, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x70, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x70, 0x69, 0x64, 0x22, 0x10, 0x0a, 0x0e, 0x4e,
+	0x6f, 0x74, 0x69, 0x66, 0x79, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x22, 0x38, 0x0a,
+	0x0e, 0x53, 0x79, 0x73, 0x6e, 0x63, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x73, 0x52, 0x65, 0x71, 0x12,
+	0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x05,
+	0x73, 0x74, 0x61, 0x72, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x6e, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0d, 0x52, 0x03, 0x65, 0x6e, 0x64, 0x22, 0x56, 0x0a, 0x0e, 0x53, 0x79, 0x73, 0x6e, 0x63,
+	0x46, 0x72, 0x61, 0x6d, 0x65, 0x73, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x30, 0x0a,
+	0x06, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x42, 0x72, 0x6f, 0x61, 0x64, 0x63, 0x61,
+	0x73, 0x74, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x52, 0x06, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x73, 0x42,
+	0x0b, 0x5a, 0x09, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -365,21 +1620,51 @@ func file_protocol_proto_rawDescGZIP() []byte {
 	return file_protocol_proto_rawDescData
 }
 
-var file_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_protocol_proto_goTypes = []interface{}{
-	(*Header)(nil),        // 0: protocol.Header
-	(*LoginReq)(nil),      // 1: protocol.LoginReq
-	(*LoginRes)(nil),      // 2: protocol.LoginRes
-	(*HeartReq)(nil),      // 3: protocol.HeartReq
-	(*HeartRes)(nil),      // 4: protocol.HeartRes
-	(*NotifyKickout)(nil), // 5: protocol.NotifyKickout
+	(*Header)(nil),                  // 0: protocol.Header
+	(*LoginReq)(nil),                // 1: protocol.LoginReq
+	(*LoginRes)(nil),                // 2: protocol.LoginRes
+	(*HeartReq)(nil),                // 3: protocol.HeartReq
+	(*HeartRes)(nil),                // 4: protocol.HeartRes
+	(*NotifyKickout)(nil),           // 5: protocol.NotifyKickout
+	(*NotifyGamePlayerEnter)(nil),   // 6: protocol.NotifyGamePlayerEnter
+	(*EnterGameReq)(nil),            // 7: protocol.EnterGameReq
+	(*EnterGameRes)(nil),            // 8: protocol.EnterGameRes
+	(*SendReadyReq)(nil),            // 9: protocol.SendReadyReq
+	(*SendReadyRes)(nil),            // 10: protocol.SendReadyRes
+	(*PlayerReadyStatus)(nil),       // 11: protocol.PlayerReadyStatus
+	(*NotifyPlayerReadyStatus)(nil), // 12: protocol.NotifyPlayerReadyStatus
+	(*NotifyGameStart)(nil),         // 13: protocol.NotifyGameStart
+	(*SendDirectionReq)(nil),        // 14: protocol.SendDirectionReq
+	(*SendDirectionRes)(nil),        // 15: protocol.SendDirectionRes
+	(*Vec2)(nil),                    // 16: protocol.Vec2
+	(*PlayerFrame)(nil),             // 17: protocol.PlayerFrame
+	(*BroadcastFrame)(nil),          // 18: protocol.BroadcastFrame
+	(*GetIndexFrameReq)(nil),        // 19: protocol.GetIndexFrameReq
+	(*GetIndexFrameRes)(nil),        // 20: protocol.GetIndexFrameRes
+	(*EatFoodReq)(nil),              // 21: protocol.EatFoodReq
+	(*EatFoodRes)(nil),              // 22: protocol.EatFoodRes
+	(*GamePlayerEndReq)(nil),        // 23: protocol.GamePlayerEndReq
+	(*GamePlayerEndRes)(nil),        // 24: protocol.GamePlayerEndRes
+	(*NotifyGamePlayerEnd)(nil),     // 25: protocol.NotifyGamePlayerEnd
+	(*NotifyGameOver)(nil),          // 26: protocol.NotifyGameOver
+	(*SysncFramesReq)(nil),          // 27: protocol.SysncFramesReq
+	(*SysncFramesRes)(nil),          // 28: protocol.SysncFramesRes
 }
 var file_protocol_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	6,  // 0: protocol.EnterGameRes.players:type_name -> protocol.NotifyGamePlayerEnter
+	11, // 1: protocol.NotifyPlayerReadyStatus.players:type_name -> protocol.PlayerReadyStatus
+	16, // 2: protocol.PlayerFrame.newfood:type_name -> protocol.Vec2
+	17, // 3: protocol.BroadcastFrame.players:type_name -> protocol.PlayerFrame
+	18, // 4: protocol.GetIndexFrameRes.frame:type_name -> protocol.BroadcastFrame
+	16, // 5: protocol.EatFoodReq.food:type_name -> protocol.Vec2
+	18, // 6: protocol.SysncFramesRes.frames:type_name -> protocol.BroadcastFrame
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_protocol_proto_init() }
@@ -460,6 +1745,282 @@ func file_protocol_proto_init() {
 				return nil
 			}
 		}
+		file_protocol_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NotifyGamePlayerEnter); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EnterGameReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EnterGameRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendReadyReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendReadyRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PlayerReadyStatus); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NotifyPlayerReadyStatus); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NotifyGameStart); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendDirectionReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendDirectionRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Vec2); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PlayerFrame); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*BroadcastFrame); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetIndexFrameReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetIndexFrameRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EatFoodReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EatFoodRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GamePlayerEndReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GamePlayerEndRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NotifyGamePlayerEnd); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NotifyGameOver); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SysncFramesReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protocol_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SysncFramesRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -467,7 +2028,7 @@ func file_protocol_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protocol_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

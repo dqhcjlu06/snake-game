@@ -190,8 +190,11 @@ func (conn *Connection) shutdownFromManager() {
 	if conn.dead {
 		return
 	}
-	conn.dead = true
 
+	if conn.Manager.OnClose != nil {
+		conn.Manager.OnClose(conn)
+	}
+	conn.dead = true
 	close(conn.quit_ch)
 }
 
@@ -209,6 +212,7 @@ func (conn *Connection) handleMessage(length uint32, raw []byte) error {
 	}
 
 	body := raw[rawlen-bodylength:]
+	log.Default().Printf("connection %d recv cmd %s", conn.id, header.Cmd)
 
 	if cb := conn.Manager.GetCallback(header.Cmd); cb != nil {
 		cb(conn, &header, body)

@@ -12,12 +12,15 @@ import (
 )
 
 type MsgHandler func(conn *Connection, header *protocol.Header, body []byte)
+type OnMsg func(c *Connection)
 
 type ConnectionManager struct {
 	client_tb map[uint32]*Connection
 	cb_tb     map[string]MsgHandler
 	lock      *sync.RWMutex
 	sn        uint32
+	OnClose   OnMsg
+	OnConnect OnMsg
 }
 
 func NewConnctionManager() *ConnectionManager {

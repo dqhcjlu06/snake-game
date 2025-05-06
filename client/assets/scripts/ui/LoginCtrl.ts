@@ -1,6 +1,7 @@
-import { _decorator, Component, EditBox, Node } from 'cc';
+import { _decorator, Component, director, EditBox, Node } from 'cc';
 import Network from '../network/Network';
 import protocol from '../protocols/protocol.js';
+import PlayerManager from '../manager/playermanager';
 const { ccclass, property } = _decorator;
 
 @ccclass('LoginCtrl')
@@ -37,9 +38,26 @@ export class LoginCtrl extends Component {
                     console.error()
                 } else {
                     let res = protocol.protocol.LoginRes.decode(data)
-                    console.log(`response:`, res)
+                    console.log(`login response:`, JSON.stringify(res))
+                    /** 进入游戏 */
+                    if (!res.code) {
+                        PlayerManager.getInstance().setPlayerId(res.pid)
+                        director.loadScene("game")
+                    }
                 }
             })
+        })
+    }
+
+    onSendHeart() {
+        Network.getInstance().sendmsg("HeartReq", null, (err, data) => {
+            if (err) {
+                console.error()
+            } else {
+                console.log("heart response success", data)
+                let res = protocol.protocol.HeartRes.decode(data)
+                console.log(`login response:`, JSON.stringify(res))
+            }
         })
     }
 }

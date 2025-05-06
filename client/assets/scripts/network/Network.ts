@@ -72,6 +72,10 @@ export default class Network {
         }
     }
 
+    isConnected(): boolean {
+        return !!this._socket
+    }
+    
     /**
     *    -----------------------------------------------------
     *    |  消息总长度  |  消息体长度  |  消息头  |    消息体     | 
