@@ -1,5 +1,5 @@
 # 贪吃蛇大作战
-[视频演示](./docs/demo.mp4)
+[视频演示](https://www.bilibili.com/video/BV1m5VbzkEjn/?vd_source=aa0f6f25117036c7bbb858afd3575714) <br/>
 基于经典贪吃蛇玩法打造的多人对战Demo，深度剖析帧同步架构与KCP协议实现。适用于技术学习与方案验证，不建议直接用于生产环境。
 
 【技术架构】<br/>
