@@ -2,6 +2,7 @@ import { NATIVE } from "cc/env";
 
 import { EventX } from "../base/EventX";
 import protocol from "../protocols/protocol.js";
+import { NetworkEvent } from "./NetworkEvent";
 
 export type ResponseBack = (err: Error, data?: Uint8Array) => void;
 export type ConnectCallback = (err?: Error) => void;
@@ -14,7 +15,7 @@ export interface ConnectOptions {
 }
 
 const MESSAGE_HEAD_ADVANCE_MASK = 2147483648
-const MAX_REQUEST_TIMEOUT = 2000
+const MAX_REQUEST_TIMEOUT = 2000 * 600
 
 
 // header: len, cmd, sn, flag
@@ -55,9 +56,11 @@ export default class Network {
 
         this._socket.onopen = () => {
             callback && callback()
+            EventX.emit(NetworkEvent.Connected)
         }
 
         this._socket.onclose = (ev) => {
+            EventX.emit(NetworkEvent.Disconnected, ev.reason)
         }
 
         this._socket.onmessage = async (evt: MessageEvent) => {
@@ -69,6 +72,10 @@ export default class Network {
             }
             const buf = new Uint8Array(received_msg)
             this.onmessage(buf)
+        }
+
+        this._socket.onerror = (ev) => {
+            EventX.emit(NetworkEvent.NetworkError, ev)
         }
     }
 

@@ -56,5 +56,7 @@ func gosend(conn *kcp.UDPSession) {
 }
 
 func main() {
+	p := []int{5, 6, 7, 8}
+	fmt.Printf("p[2:2] = %v\n", p[2:3])
 	server()
 }

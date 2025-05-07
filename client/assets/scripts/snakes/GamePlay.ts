@@ -29,8 +29,6 @@ export class GamePlay extends Component {
     private head: Piece;
     private tail: Piece;
     private moving: boolean = false;
-    private directions: Direction = new Direction();
-    private speed: number = 1
 
     start() {
         this.drawFrame();
@@ -112,7 +110,6 @@ export class GamePlay extends Component {
 
     framed(currentDir: DIRECTIONS): void {
         if (this.moving) {
-            // let currentDir = this.directions.pop();
             let nextpos: Vec2 = new Vec2(this.head.x, this.head.y);
             switch (currentDir) {
                 case DIRECTIONS.LEFT:
@@ -164,10 +161,6 @@ export class GamePlay extends Component {
                 this.gameOver()
             }
         }
-    }
-
-    pushDirection(dir: DIRECTIONS) {
-        this.directions.set(dir)
     }
 
     makeMoveRight(vec: Vec2): Vec2 {

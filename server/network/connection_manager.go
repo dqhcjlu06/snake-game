@@ -61,6 +61,7 @@ func (mgr *ConnectionManager) Add(id uint32, conn *Connection) {
 	defer mgr.lock.Unlock()
 	if old_conn, ok := mgr.client_tb[id]; ok {
 		log.Default().Printf("connection %d already exist", id)
+		old_conn.id = 0
 		mgr.shutdown(old_conn)
 	}
 	conn.id = id

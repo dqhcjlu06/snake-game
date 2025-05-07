@@ -1363,7 +1363,6 @@ $root.protocol = (function() {
          * @interface INotifyGamePlayerEnter
          * @property {number|null} [pid] NotifyGamePlayerEnter pid
          * @property {boolean|null} [isPlayer] NotifyGamePlayerEnter isPlayer
-         * @property {boolean|null} [ready] NotifyGamePlayerEnter ready
          */
 
         /**
@@ -1398,14 +1397,6 @@ $root.protocol = (function() {
         NotifyGamePlayerEnter.prototype.isPlayer = false;
 
         /**
-         * NotifyGamePlayerEnter ready.
-         * @member {boolean} ready
-         * @memberof protocol.NotifyGamePlayerEnter
-         * @instance
-         */
-        NotifyGamePlayerEnter.prototype.ready = false;
-
-        /**
          * Creates a new NotifyGamePlayerEnter instance using the specified properties.
          * @function create
          * @memberof protocol.NotifyGamePlayerEnter
@@ -1433,8 +1424,6 @@ $root.protocol = (function() {
                 writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.pid);
             if (message.isPlayer != null && Object.hasOwnProperty.call(message, "isPlayer"))
                 writer.uint32(/* id 2, wireType 0 =*/16).bool(message.isPlayer);
-            if (message.ready != null && Object.hasOwnProperty.call(message, "ready"))
-                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.ready);
             return writer;
         };
 
@@ -1475,10 +1464,6 @@ $root.protocol = (function() {
                     }
                 case 2: {
                         message.isPlayer = reader.bool();
-                        break;
-                    }
-                case 3: {
-                        message.ready = reader.bool();
                         break;
                     }
                 default:
@@ -1522,9 +1507,6 @@ $root.protocol = (function() {
             if (message.isPlayer != null && message.hasOwnProperty("isPlayer"))
                 if (typeof message.isPlayer !== "boolean")
                     return "isPlayer: boolean expected";
-            if (message.ready != null && message.hasOwnProperty("ready"))
-                if (typeof message.ready !== "boolean")
-                    return "ready: boolean expected";
             return null;
         };
 
@@ -1544,8 +1526,6 @@ $root.protocol = (function() {
                 message.pid = object.pid >>> 0;
             if (object.isPlayer != null)
                 message.isPlayer = Boolean(object.isPlayer);
-            if (object.ready != null)
-                message.ready = Boolean(object.ready);
             return message;
         };
 
@@ -1565,14 +1545,11 @@ $root.protocol = (function() {
             if (options.defaults) {
                 object.pid = 0;
                 object.isPlayer = false;
-                object.ready = false;
             }
             if (message.pid != null && message.hasOwnProperty("pid"))
                 object.pid = message.pid;
             if (message.isPlayer != null && message.hasOwnProperty("isPlayer"))
                 object.isPlayer = message.isPlayer;
-            if (message.ready != null && message.hasOwnProperty("ready"))
-                object.ready = message.ready;
             return object;
         };
 
@@ -1862,8 +1839,11 @@ $root.protocol = (function() {
          * @memberof protocol
          * @interface IEnterGameRes
          * @property {number|null} [code] EnterGameRes code
+         * @property {string|null} [msg] EnterGameRes msg
          * @property {Array.<protocol.INotifyGamePlayerEnter>|null} [players] EnterGameRes players
          * @property {number|null} [currFrameIndex] EnterGameRes currFrameIndex
+         * @property {boolean|null} [running] EnterGameRes running
+         * @property {number|null} [seat] EnterGameRes seat
          */
 
         /**
@@ -1891,6 +1871,14 @@ $root.protocol = (function() {
         EnterGameRes.prototype.code = 0;
 
         /**
+         * EnterGameRes msg.
+         * @member {string} msg
+         * @memberof protocol.EnterGameRes
+         * @instance
+         */
+        EnterGameRes.prototype.msg = "";
+
+        /**
          * EnterGameRes players.
          * @member {Array.<protocol.INotifyGamePlayerEnter>} players
          * @memberof protocol.EnterGameRes
@@ -1905,6 +1893,22 @@ $root.protocol = (function() {
          * @instance
          */
         EnterGameRes.prototype.currFrameIndex = 0;
+
+        /**
+         * EnterGameRes running.
+         * @member {boolean} running
+         * @memberof protocol.EnterGameRes
+         * @instance
+         */
+        EnterGameRes.prototype.running = false;
+
+        /**
+         * EnterGameRes seat.
+         * @member {number} seat
+         * @memberof protocol.EnterGameRes
+         * @instance
+         */
+        EnterGameRes.prototype.seat = 0;
 
         /**
          * Creates a new EnterGameRes instance using the specified properties.
@@ -1932,11 +1936,17 @@ $root.protocol = (function() {
                 writer = $Writer.create();
             if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+            if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msg);
             if (message.players != null && message.players.length)
                 for (var i = 0; i < message.players.length; ++i)
-                    $root.protocol.NotifyGamePlayerEnter.encode(message.players[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.protocol.NotifyGamePlayerEnter.encode(message.players[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.currFrameIndex != null && Object.hasOwnProperty.call(message, "currFrameIndex"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.currFrameIndex);
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.currFrameIndex);
+            if (message.running != null && Object.hasOwnProperty.call(message, "running"))
+                writer.uint32(/* id 5, wireType 0 =*/40).bool(message.running);
+            if (message.seat != null && Object.hasOwnProperty.call(message, "seat"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.seat);
             return writer;
         };
 
@@ -1976,13 +1986,25 @@ $root.protocol = (function() {
                         break;
                     }
                 case 2: {
+                        message.msg = reader.string();
+                        break;
+                    }
+                case 3: {
                         if (!(message.players && message.players.length))
                             message.players = [];
                         message.players.push($root.protocol.NotifyGamePlayerEnter.decode(reader, reader.uint32()));
                         break;
                     }
-                case 3: {
-                        message.currFrameIndex = reader.uint32();
+                case 4: {
+                        message.currFrameIndex = reader.int32();
+                        break;
+                    }
+                case 5: {
+                        message.running = reader.bool();
+                        break;
+                    }
+                case 6: {
+                        message.seat = reader.int32();
                         break;
                     }
                 default:
@@ -2023,6 +2045,9 @@ $root.protocol = (function() {
             if (message.code != null && message.hasOwnProperty("code"))
                 if (!$util.isInteger(message.code))
                     return "code: integer expected";
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                if (!$util.isString(message.msg))
+                    return "msg: string expected";
             if (message.players != null && message.hasOwnProperty("players")) {
                 if (!Array.isArray(message.players))
                     return "players: array expected";
@@ -2035,6 +2060,12 @@ $root.protocol = (function() {
             if (message.currFrameIndex != null && message.hasOwnProperty("currFrameIndex"))
                 if (!$util.isInteger(message.currFrameIndex))
                     return "currFrameIndex: integer expected";
+            if (message.running != null && message.hasOwnProperty("running"))
+                if (typeof message.running !== "boolean")
+                    return "running: boolean expected";
+            if (message.seat != null && message.hasOwnProperty("seat"))
+                if (!$util.isInteger(message.seat))
+                    return "seat: integer expected";
             return null;
         };
 
@@ -2052,6 +2083,8 @@ $root.protocol = (function() {
             var message = new $root.protocol.EnterGameRes();
             if (object.code != null)
                 message.code = object.code | 0;
+            if (object.msg != null)
+                message.msg = String(object.msg);
             if (object.players) {
                 if (!Array.isArray(object.players))
                     throw TypeError(".protocol.EnterGameRes.players: array expected");
@@ -2063,7 +2096,11 @@ $root.protocol = (function() {
                 }
             }
             if (object.currFrameIndex != null)
-                message.currFrameIndex = object.currFrameIndex >>> 0;
+                message.currFrameIndex = object.currFrameIndex | 0;
+            if (object.running != null)
+                message.running = Boolean(object.running);
+            if (object.seat != null)
+                message.seat = object.seat | 0;
             return message;
         };
 
@@ -2084,10 +2121,15 @@ $root.protocol = (function() {
                 object.players = [];
             if (options.defaults) {
                 object.code = 0;
+                object.msg = "";
                 object.currFrameIndex = 0;
+                object.running = false;
+                object.seat = 0;
             }
             if (message.code != null && message.hasOwnProperty("code"))
                 object.code = message.code;
+            if (message.msg != null && message.hasOwnProperty("msg"))
+                object.msg = message.msg;
             if (message.players && message.players.length) {
                 object.players = [];
                 for (var j = 0; j < message.players.length; ++j)
@@ -2095,6 +2137,10 @@ $root.protocol = (function() {
             }
             if (message.currFrameIndex != null && message.hasOwnProperty("currFrameIndex"))
                 object.currFrameIndex = message.currFrameIndex;
+            if (message.running != null && message.hasOwnProperty("running"))
+                object.running = message.running;
+            if (message.seat != null && message.hasOwnProperty("seat"))
+                object.seat = message.seat;
             return object;
         };
 
@@ -2962,6 +3008,8 @@ $root.protocol = (function() {
          * Properties of a NotifyGameStart.
          * @memberof protocol
          * @interface INotifyGameStart
+         * @property {number|null} [seat] NotifyGameStart seat
+         * @property {Array.<number>|null} [players] NotifyGameStart players
          */
 
         /**
@@ -2973,11 +3021,28 @@ $root.protocol = (function() {
          * @param {protocol.INotifyGameStart=} [properties] Properties to set
          */
         function NotifyGameStart(properties) {
+            this.players = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * NotifyGameStart seat.
+         * @member {number} seat
+         * @memberof protocol.NotifyGameStart
+         * @instance
+         */
+        NotifyGameStart.prototype.seat = 0;
+
+        /**
+         * NotifyGameStart players.
+         * @member {Array.<number>} players
+         * @memberof protocol.NotifyGameStart
+         * @instance
+         */
+        NotifyGameStart.prototype.players = $util.emptyArray;
 
         /**
          * Creates a new NotifyGameStart instance using the specified properties.
@@ -3003,6 +3068,14 @@ $root.protocol = (function() {
         NotifyGameStart.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.seat != null && Object.hasOwnProperty.call(message, "seat"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.seat);
+            if (message.players != null && message.players.length) {
+                writer.uint32(/* id 2, wireType 2 =*/18).fork();
+                for (var i = 0; i < message.players.length; ++i)
+                    writer.uint32(message.players[i]);
+                writer.ldelim();
+            }
             return writer;
         };
 
@@ -3037,6 +3110,21 @@ $root.protocol = (function() {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
+                case 1: {
+                        message.seat = reader.int32();
+                        break;
+                    }
+                case 2: {
+                        if (!(message.players && message.players.length))
+                            message.players = [];
+                        if ((tag & 7) === 2) {
+                            var end2 = reader.uint32() + reader.pos;
+                            while (reader.pos < end2)
+                                message.players.push(reader.uint32());
+                        } else
+                            message.players.push(reader.uint32());
+                        break;
+                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -3072,6 +3160,16 @@ $root.protocol = (function() {
         NotifyGameStart.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.seat != null && message.hasOwnProperty("seat"))
+                if (!$util.isInteger(message.seat))
+                    return "seat: integer expected";
+            if (message.players != null && message.hasOwnProperty("players")) {
+                if (!Array.isArray(message.players))
+                    return "players: array expected";
+                for (var i = 0; i < message.players.length; ++i)
+                    if (!$util.isInteger(message.players[i]))
+                        return "players: integer[] expected";
+            }
             return null;
         };
 
@@ -3086,7 +3184,17 @@ $root.protocol = (function() {
         NotifyGameStart.fromObject = function fromObject(object) {
             if (object instanceof $root.protocol.NotifyGameStart)
                 return object;
-            return new $root.protocol.NotifyGameStart();
+            var message = new $root.protocol.NotifyGameStart();
+            if (object.seat != null)
+                message.seat = object.seat | 0;
+            if (object.players) {
+                if (!Array.isArray(object.players))
+                    throw TypeError(".protocol.NotifyGameStart.players: array expected");
+                message.players = [];
+                for (var i = 0; i < object.players.length; ++i)
+                    message.players[i] = object.players[i] >>> 0;
+            }
+            return message;
         };
 
         /**
@@ -3098,8 +3206,22 @@ $root.protocol = (function() {
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        NotifyGameStart.toObject = function toObject() {
-            return {};
+        NotifyGameStart.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.players = [];
+            if (options.defaults)
+                object.seat = 0;
+            if (message.seat != null && message.hasOwnProperty("seat"))
+                object.seat = message.seat;
+            if (message.players && message.players.length) {
+                object.players = [];
+                for (var j = 0; j < message.players.length; ++j)
+                    object.players[j] = message.players[j];
+            }
+            return object;
         };
 
         /**
@@ -4086,7 +4208,7 @@ $root.protocol = (function() {
             if (!writer)
                 writer = $Writer.create();
             if (message.index != null && Object.hasOwnProperty.call(message, "index"))
-                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.index);
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.index);
             if (message.players != null && message.players.length)
                 for (var i = 0; i < message.players.length; ++i)
                     $root.protocol.PlayerFrame.encode(message.players[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
@@ -4125,7 +4247,7 @@ $root.protocol = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.index = reader.uint32();
+                        message.index = reader.int32();
                         break;
                     }
                 case 2: {
@@ -4197,7 +4319,7 @@ $root.protocol = (function() {
                 return object;
             var message = new $root.protocol.BroadcastFrame();
             if (object.index != null)
-                message.index = object.index >>> 0;
+                message.index = object.index | 0;
             if (object.players) {
                 if (!Array.isArray(object.players))
                     throw TypeError(".protocol.BroadcastFrame.players: array expected");

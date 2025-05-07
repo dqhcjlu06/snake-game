@@ -617,9 +617,6 @@ export namespace protocol {
 
         /** NotifyGamePlayerEnter isPlayer */
         isPlayer?: (boolean|null);
-
-        /** NotifyGamePlayerEnter ready */
-        ready?: (boolean|null);
     }
 
     /** Represents a NotifyGamePlayerEnter. */
@@ -636,9 +633,6 @@ export namespace protocol {
 
         /** NotifyGamePlayerEnter isPlayer. */
         public isPlayer: boolean;
-
-        /** NotifyGamePlayerEnter ready. */
-        public ready: boolean;
 
         /**
          * Creates a new NotifyGamePlayerEnter instance using the specified properties.
@@ -833,11 +827,20 @@ export namespace protocol {
         /** EnterGameRes code */
         code?: (number|null);
 
+        /** EnterGameRes msg */
+        msg?: (string|null);
+
         /** EnterGameRes players */
         players?: (protocol.INotifyGamePlayerEnter[]|null);
 
         /** EnterGameRes currFrameIndex */
         currFrameIndex?: (number|null);
+
+        /** EnterGameRes running */
+        running?: (boolean|null);
+
+        /** EnterGameRes seat */
+        seat?: (number|null);
     }
 
     /** Represents an EnterGameRes. */
@@ -852,11 +855,20 @@ export namespace protocol {
         /** EnterGameRes code. */
         public code: number;
 
+        /** EnterGameRes msg. */
+        public msg: string;
+
         /** EnterGameRes players. */
         public players: protocol.INotifyGamePlayerEnter[];
 
         /** EnterGameRes currFrameIndex. */
         public currFrameIndex: number;
+
+        /** EnterGameRes running. */
+        public running: boolean;
+
+        /** EnterGameRes seat. */
+        public seat: number;
 
         /**
          * Creates a new EnterGameRes instance using the specified properties.
@@ -1326,6 +1338,12 @@ export namespace protocol {
 
     /** Properties of a NotifyGameStart. */
     interface INotifyGameStart {
+
+        /** NotifyGameStart seat */
+        seat?: (number|null);
+
+        /** NotifyGameStart players */
+        players?: (number[]|null);
     }
 
     /** Represents a NotifyGameStart. */
@@ -1336,6 +1354,12 @@ export namespace protocol {
          * @param [properties] Properties to set
          */
         constructor(properties?: protocol.INotifyGameStart);
+
+        /** NotifyGameStart seat. */
+        public seat: number;
+
+        /** NotifyGameStart players. */
+        public players: number[];
 
         /**
          * Creates a new NotifyGameStart instance using the specified properties.

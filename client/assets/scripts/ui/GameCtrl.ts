@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTouch, Input, instantiate, Prefab, profiler, Node, Vec2, Toggle, EditBox, Label } from 'cc';
+import { _decorator, Component, EventTouch, Input, instantiate, Prefab, profiler, Node, Vec2, Toggle, EditBox, Label, game } from 'cc';
 import { GamePlay } from '../snakes/GamePlay';
 import { DIRECTIONS, FRAME_DELTA_TIME, GAME_EVENT, GAME_VIEW_HEIGHT, GAME_VIEW_WIDTH } from '../snakes/constants';
 import Network from '../network/Network';
@@ -22,38 +22,25 @@ export class GameCtrl extends Component {
 
     @property(Node)
     settings: Node = null;
-
-    private myGamePlayer: GamePlay
+    private _gameplayers: Map<number, GamePlay> = new Map();
+    private _isPlayer: boolean = true;
 
     private lastDir: DIRECTIONS = DIRECTIONS.RIGHT;
     private _touchStartPos: Vec2 = null;
     private _mold: GAME_MOLD = GAME_MOLD.STAND_ALONE;
     private directions: Direction = new Direction();
-
+    private _currFrameIndex: number = -1; // 当前客户端处理帧, 服务器序列从0开始
+    private _queueFrames: protocol.protocol.IBroadcastFrame[] = [];  // 未处理队列，客户端追针，新的帧数缓存
+    private _lastFrameIndex: number = 0;  // 服务器下发最新帧数
     protected start(): void {
         // 监听服务器消息
         EventX.on("NotifyGameStart", (header: protocol.protocol.Header, data: Uint8Array) => {
-            console.log(`NotifyGameStart`)
-            this.settings.active = false;
-            this.initGamePlay();
+            let notify = protocol.protocol.NotifyGameStart.decode(data);
+            this.initGamePlay(notify.seat, notify.players);
         })
 
         EventX.on("NotifyGameOver", (header: protocol.protocol.Header, data: Uint8Array) => {
             console.log(`NotifyGameOver`)
-            // this.settings.active = false;
-            // this.initGamePlay();
-        })
-
-        EventX.on("BroadcastFrame", (header: protocol.protocol.Header, data: Uint8Array) => {
-            let notify = protocol.protocol.BroadcastFrame.decode(data);
-            for (let p of notify.players) {
-                if (p.pid == PlayerManager.getInstance().getPlayerId()) {
-                    this.myGamePlayer.framed(p.direction);
-                    if ( p.newfood) {
-                        this.myGamePlayer.addFood(p.newfood.x, p.newfood.y)
-                    }
-                }
-            }
         })
 
         EventX.on("NotifyGamePlayerEnter", (header: protocol.protocol.Header, data: Uint8Array) => {
@@ -67,6 +54,10 @@ export class GameCtrl extends Component {
         EventX.on(GAME_EVENT.GAME_OVER, this.onGameOverNotify, this)
 
         profiler.hideStats();
+
+        this.node.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.on(Input.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
     }
 
     onDirectionClick(evt: EventTouch, customEventData: string): void {
@@ -91,14 +82,13 @@ export class GameCtrl extends Component {
     }
 
     onPauseClick() {
-        this.myGamePlayer.pauseGame()
     }
 
     onResumeClick() {
-        this.myGamePlayer.resumeGame()
     }
 
     addActionDirection(dir: DIRECTIONS) {
+        if (!this._isPlayer) return
         // 禁止原地掉头
         if ((this.lastDir + 2) % 4 === dir % 4) {
             return
@@ -130,12 +120,15 @@ export class GameCtrl extends Component {
     }
 
     onEatFoodNotify(gameplay: GamePlay, x: number, y: number) {
-        if (gameplay === this.myGamePlayer) {
+        console.log('eat foot', x, y)
+        let pid = PlayerManager.getInstance().getPlayerId();
+        let myGamePlayer = this._gameplayers[pid];
+        if (myGamePlayer == gameplay) {
             if (this._mold == GAME_MOLD.STAND_ALONE) {
                 this.scheduleOnce(() => {
                     let x = Math.floor(Math.random() * GAME_VIEW_WIDTH - GAME_VIEW_WIDTH / 2);
                     let y = Math.floor(Math.random() * GAME_VIEW_HEIGHT - GAME_VIEW_HEIGHT / 2);
-                    this.myGamePlayer.addFood(x, y);
+                    myGamePlayer.addFood(x, y);
                 }, 0.5)
             } else { // 上传数据
                 let food = new protocol.protocol.Vec2()
@@ -144,10 +137,7 @@ export class GameCtrl extends Component {
                 let req = protocol.protocol.EatFoodReq.create({
                     food
                 })
-
                 let buf = protocol.protocol.EatFoodReq.encode(req).finish();
-                console.log(`send eat food req:`, req, buf)
-
                 Network.getInstance().sendmsg("EatFoodReq", buf, (err, data) => {
                     if (err) {
                         console.log(err);
@@ -167,8 +157,12 @@ export class GameCtrl extends Component {
      * 玩家游戏结束
      */
     onGameOverNotify(gameplay: GamePlay) {
-        if (gameplay == this.myGamePlayer) {
+        let pid = PlayerManager.getInstance().getPlayerId();
+        let myGamePlayer = this._gameplayers[pid];
+
+        if (gameplay == myGamePlayer) {
             if (this._mold == GAME_MOLD.STAND_ALONE) {
+                EventX.emit("NotifyGameOver");
             } else {
                 Network.getInstance().sendmsg("GamePlayerEndReq", null, (err, data) => {
                     if (err) {
@@ -213,7 +207,10 @@ export class GameCtrl extends Component {
 
         if (toggle1.getComponent(Toggle).isChecked) {
             this._mold = GAME_MOLD.STAND_ALONE;
-            EventX.emit("NotifyGameStart");
+            let notify = protocol.protocol.NotifyGameStart.create();
+            let buf = protocol.protocol.NotifyGameStart.encode(notify).finish();
+            EventX.emit("NotifyGameStart", null, buf);
+            this._isPlayer = true;
             this.startLocGame();
             return
         } else if (toggle2.getComponent(Toggle).isChecked) {
@@ -225,12 +222,15 @@ export class GameCtrl extends Component {
         let editroom = node.parent.getChildByPath("editbox")
         let roomno = editroom.getComponent(EditBox).string;
         if (roomno == "") {
-            this.showErr(node.parent, "请输入房间号")
+            this.showErr("请输入房间号")
             return
         }
 
+        let lookon = node.parent.getChildByPath("lookon")
+        this._isPlayer = !lookon.getComponent(Toggle).isChecked
+
         let req = protocol.protocol.EnterGameReq.create({
-            isPlayer: true,
+            isPlayer: this._isPlayer,
             roomno,
             seat: this._mold == GAME_MOLD.MULTIPLYER_NETWORKING ? 2 : 1
         })
@@ -245,41 +245,148 @@ export class GameCtrl extends Component {
             if (data) {
                 let res = protocol.protocol.EnterGameRes.decode(data);
                 console.log(res);
+                if (res.code) {
+                    this.showErr(res.msg)
+                    return
+                }
+                this._lastFrameIndex = res.currFrameIndex
+                if (res.running) {
+                    let players = res.players.filter((p) => p.isPlayer).map((p) => p.pid)
+                    this.initGamePlay(res.seat, players)
+                }
             }
         })
     }
 
-    initGamePlay() {
+    initGamePlay(seat: number, players: number[]) {
+        this.settings.active = false;
+        let others = 0
+        for (let pid of players) {
+            this._gameplayers[pid] = this.createGamePlay()
+            if (pid == PlayerManager.getInstance().getPlayerId() || seat < 2) {
+                this._gameplayers[pid].node.setPosition(0, 200)
+            } else {
+                this._gameplayers[pid].node.setScale(0.5, 0.5, 1)
+                let x = (others - 0.5) * 375
+                let y = this._isPlayer ? -520 : 0;
+                console.log("others pos ", x, y);
+                this._gameplayers[pid].node.setPosition(x, y);
+                others += 1;
+            }
+        }
+
+        this._handleBroastframe()
+    }
+
+    createGamePlay(): GamePlay {
         let n = instantiate(this.gameplayprefab);
         n.parent = this.node;
-        n.setPosition(0, 200)
-        this.myGamePlayer = n.getComponent(GamePlay)
-
-        this.node.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
-        this.node.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on(Input.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
-
-        /* 其他玩家 */
-        // let other = instantiate(this.gameplayprefab);
-        // other.parent = this.node;
-        // other.scale = new Vec3(0.5, 0.5, 1);
-        // other.setPosition(-160, -540);
+        let gameplay = n.getComponent(GamePlay)
+        return gameplay
     }
 
     startLocGame() {
+        let pid = PlayerManager.getInstance().getPlayerId()
         this.schedule(() => {
-            if (this.myGamePlayer) {
+            let myGamePlayer = this._gameplayers[pid]
+            if (myGamePlayer) {
                 let dir = this.directions.pop()
-                this.myGamePlayer.framed(dir)
+                myGamePlayer.framed(dir)
             }
         }, FRAME_DELTA_TIME)
     }
 
-    private showErr(node: Node, err: string) {
-        let nn = node.getChildByName("errmsg")
+    private _handleBroastframe() {
+        EventX.on("BroadcastFrame", (header: protocol.protocol.Header, data: Uint8Array) => {
+            let notify = protocol.protocol.BroadcastFrame.decode(data);
+            this._lastFrameIndex = notify.index;
+            this._queueFrames.push(notify)
+            if (this._queueFrames.length > 1) {
+            } else {
+                this._handleFrame()
+            }
+        })
+    }
+
+    private showErr(err: string) {
+        let nn = this.settings.getChildByName("errmsg")
         if (nn) {
             nn.getComponent(Label).string = err
             nn.active = true
+        }
+    }
+    private _handleFrame() {
+        if (this._currFrameIndex == this._lastFrameIndex) {
+            return
+        }
+        this._updateFrame()
+    }
+
+    private _updateFrame() {
+        if (this._currFrameIndex == this._lastFrameIndex) return
+        // 同步帧
+        if (this._queueFrames.length == 0) {
+            let start = this._currFrameIndex + 1
+            let end = Math.min(600, this._lastFrameIndex - this._currFrameIndex) + this._currFrameIndex  // 单词最多同步100帧
+            this._sysncFrames(start, end)
+            return
+        }
+
+        do {
+            let frame = this._queueFrames[0]
+            if (frame.index <= this._currFrameIndex) { // 已处理
+                this._queueFrames.shift()
+                continue
+            }
+            if (frame.index - this._currFrameIndex === 1) {
+                this._frameWork(frame)
+                this._queueFrames.shift()
+                continue
+            } else {
+                let start = this._currFrameIndex + 1
+                let end = Math.min(600, frame.index - this._currFrameIndex) + this._currFrameIndex + 1  // 单词最多同步100帧
+                this._sysncFrames(start, end)
+                break
+            }
+        } while (this._queueFrames.length > 0)
+    }
+
+    private _sysncFrames(start: number, end: number) {
+        let req = protocol.protocol.SysncFramesReq.create({
+            start,
+            end: end + 1
+        })
+        let buf = protocol.protocol.SysncFramesReq.encode(req).finish()
+        Network.getInstance().sendmsg("SysncFramesReq", buf, (err, data) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+
+            if (data) {
+                let res = protocol.protocol.SysncFramesRes.decode(data)
+                if (res.code) { /** 同步错误 */
+                    console.error(res)
+                    return
+                }
+                // 往前插入，防止请求过程中，新的帧插入
+                this._queueFrames = res.frames.concat(this._queueFrames)
+                this._queueFrames.sort((a, b) => a.index - b.index)
+                this._updateFrame()
+            }
+        })
+    }
+
+    private _frameWork(frame: protocol.protocol.IBroadcastFrame) {
+        this._currFrameIndex = frame.index
+        for (let p of frame.players) {
+            let gameplay = this._gameplayers[p.pid]
+            if (gameplay) {
+                gameplay.framed(p.direction)
+                if (p.newfood) {
+                    gameplay.addFood(p.newfood.x, p.newfood.y)
+                }
+            }
         }
     }
 }

@@ -46,7 +46,6 @@ message NotifyKickout {
 message NotifyGamePlayerEnter {
    uint32 pid = 1;
    bool isPlayer = 2;
-   bool ready = 3;
 }
 
 /**
@@ -60,8 +59,11 @@ message EnterGameReq {
 
 message EnterGameRes {
    int32 code = 1;
-   repeated NotifyGamePlayerEnter players = 2; 
-   uint32 currFrameIndex = 3;  // 当前帧
+   string msg = 2;   // 错误信息
+   repeated NotifyGamePlayerEnter players = 3; 
+   int32 currFrameIndex = 4;  // 当前帧
+   bool running = 5;  // 是否游戏中
+   int32 seat = 6;
 }
 
 message SendReadyReq {
@@ -81,7 +83,10 @@ message NotifyPlayerReadyStatus {
 }
 
 // 游戏开始
-message NotifyGameStart {}
+message NotifyGameStart {
+   int32 seat = 1;
+   repeated uint32 players = 2; // 玩家列表
+}
 
 // 发送方向操作
 message SendDirectionReq {
@@ -104,7 +109,7 @@ message PlayerFrame {
 }
 
 message BroadcastFrame {
-   uint32 index = 1;
+   int32 index = 1;
    repeated PlayerFrame players = 2;
 }
 

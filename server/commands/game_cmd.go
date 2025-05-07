@@ -43,7 +43,13 @@ func register_game_cmd(srv *network.Server) {
 			return
 		}
 
-		logic := game.NewGameLogic(srv, req.Seat)
+		if !req.IsPlayer {
+			res.Code = 2
+			res.Msg = "房间不存在"
+			return
+		}
+
+		logic := game.NewGameLogic(srv, req.Seat, req.Roomno)
 		gamelogics[req.Roomno] = logic
 		logic.OnEnterGame(conn.GetId(), req.IsPlayer, &res)
 	})
@@ -207,5 +213,8 @@ func onClose(conn *network.Connection) {
 	logic := getPlayerGameLogic(conn.GetId())
 	if logic != nil && logic.PlayerOffline(conn.GetId()) == 0 {
 		delete(playrooms, conn.GetId())
+		if logic.IsGameOver {
+			delete(gamelogics, logic.RoomNo)
+		}
 	}
 }

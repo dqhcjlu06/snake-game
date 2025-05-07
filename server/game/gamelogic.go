@@ -14,24 +14,28 @@ const (
 )
 
 type GameLogic struct {
+	RoomNo         string
+	IsGameOver     bool
 	srv            *network.Server
 	pids           []uint32
 	players        map[uint32]*GamePlayer
 	lock           *sync.RWMutex
 	maxplayers     int32
 	running        bool
-	currFrameIndex uint32
+	currFrameIndex int32
 	frames         []*protocol.BroadcastFrame
 }
 
-func NewGameLogic(srv *network.Server, playernum int32) *GameLogic {
+func NewGameLogic(srv *network.Server, playernum int32, roomno string) *GameLogic {
 	g := &GameLogic{
-		srv:        srv,
-		players:    make(map[uint32]*GamePlayer),
-		pids:       make([]uint32, 0),
-		lock:       &sync.RWMutex{},
-		maxplayers: playernum,
-		running:    false,
+		srv:            srv,
+		players:        make(map[uint32]*GamePlayer),
+		pids:           make([]uint32, 0),
+		lock:           &sync.RWMutex{},
+		maxplayers:     playernum,
+		running:        false,
+		currFrameIndex: -1,
+		RoomNo:         roomno,
 	}
 	go g.loop()
 	return g
@@ -48,7 +52,7 @@ func (g *GameLogic) OnEnterGame(pid uint32, isPlayer bool, res *protocol.EnterGa
 			}
 			g.broadcast("NotifyGamePlayerEnter", &notify)
 
-			if len(g.players) >= int(g.maxplayers) {
+			if !g.running && len(g.players) >= int(g.maxplayers) {
 				g.gamestart()
 			}
 		}
@@ -60,14 +64,14 @@ func (g *GameLogic) OnEnterGame(pid uint32, isPlayer bool, res *protocol.EnterGa
 		// 可玩人数已满
 		if _, ok := g.players[pid]; ok {
 			res.Code = 0
-			return
+		} else {
+			if len(g.players) >= int(g.maxplayers) {
+				res.Code = 1
+				res.Msg = "玩家已满，请进其他房间"
+				return
+			}
+			g.players[pid] = NewGamePlayer(pid)
 		}
-
-		if len(g.players) >= int(g.maxplayers) {
-			res.Code = 1
-			return
-		}
-		g.players[pid] = NewGamePlayer(pid)
 	}
 
 	bIn := false
@@ -76,18 +80,11 @@ func (g *GameLogic) OnEnterGame(pid uint32, isPlayer bool, res *protocol.EnterGa
 			bIn = true
 		}
 
-		if player, ok := g.players[pid]; ok {
-			res.Players = append(res.Players, &protocol.NotifyGamePlayerEnter{
-				Pid:      p,
-				IsPlayer: ok,
-				Ready:    player.Ready,
-			})
-		} else {
-			res.Players = append(res.Players, &protocol.NotifyGamePlayerEnter{
-				Pid:      p,
-				IsPlayer: false,
-			})
-		}
+		_, ok := g.players[p]
+		res.Players = append(res.Players, &protocol.NotifyGamePlayerEnter{
+			Pid:      p,
+			IsPlayer: ok,
+		})
 	}
 
 	if !bIn {
@@ -95,6 +92,8 @@ func (g *GameLogic) OnEnterGame(pid uint32, isPlayer bool, res *protocol.EnterGa
 	}
 
 	res.CurrFrameIndex = g.currFrameIndex
+	res.Running = g.running
+	res.Seat = g.maxplayers
 	res.Code = 0
 }
 
@@ -180,14 +179,6 @@ func (g *GameLogic) SyncFrames(start uint32, end uint32, res *protocol.SysncFram
 }
 
 func (g *GameLogic) OnEatFood(pid uint32, pos *protocol.Vec2) int32 {
-	// g.lock.Lock()
-	// defer g.lock.Unlock()
-	// player, ok := g.players[pid]
-	// if ok && player != nil {
-	// 	res := player.EatFood(pos.X, pos.Y)
-	// 	return res
-	// }
-	// return 1
 	g.lock.Lock()
 	defer func() {
 		g.lock.Unlock()
@@ -267,11 +258,20 @@ func (g *GameLogic) PlayerOnline(pid uint32) {
 
 func (g *GameLogic) gamestart() {
 	g.running = true
-	g.broadcast("NotifyGameStart", nil)
+	notify := protocol.NotifyGameStart{
+		Seat: g.maxplayers,
+	}
+
+	for _, p := range g.players {
+		notify.Players = append(notify.Players, p.Pid)
+	}
+
+	g.broadcast("NotifyGameStart", &notify)
 }
 
 func (g *GameLogic) gameover() {
 	g.running = false
+	g.IsGameOver = true
 	g.broadcast("NotifyGameOver", nil)
 }
 
@@ -288,7 +288,7 @@ func (g *GameLogic) loop() {
 func (g *GameLogic) updateFrame() {
 	g.lock.Lock()
 	defer g.lock.Unlock()
-
+	g.currFrameIndex++
 	data := protocol.BroadcastFrame{
 		Index: g.currFrameIndex,
 	}
@@ -317,8 +317,6 @@ func (g *GameLogic) updateFrame() {
 		g.gameover()
 	} else {
 		g.frames = append(g.frames, &data)
-		g.currFrameIndex++
-
 		g.broadcast("BroadcastFrame", &data)
 	}
 }
