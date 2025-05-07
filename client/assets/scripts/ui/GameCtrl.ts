@@ -253,6 +253,8 @@ export class GameCtrl extends Component {
                 if (res.running) {
                     let players = res.players.filter((p) => p.isPlayer).map((p) => p.pid)
                     this.initGamePlay(res.seat, players)
+                } else {
+                    this.showErr("等待其他玩家加入...")
                 }
             }
         })
