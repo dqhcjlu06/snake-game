@@ -207,7 +207,10 @@ export class GameCtrl extends Component {
 
         if (toggle1.getComponent(Toggle).isChecked) {
             this._mold = GAME_MOLD.STAND_ALONE;
-            let notify = protocol.protocol.NotifyGameStart.create();
+            let notify = protocol.protocol.NotifyGameStart.create({
+                seat: 1,
+                players: [PlayerManager.getInstance().getPlayerId()]
+            });
             let buf = protocol.protocol.NotifyGameStart.encode(notify).finish();
             EventX.emit("NotifyGameStart", null, buf);
             this._isPlayer = true;
@@ -267,6 +270,9 @@ export class GameCtrl extends Component {
             this._gameplayers[pid] = this.createGamePlay()
             if (pid == PlayerManager.getInstance().getPlayerId() || seat < 2) {
                 this._gameplayers[pid].node.setPosition(0, 200)
+                if (this._mold == GAME_MOLD.STAND_ALONE) {
+                    this.onEatFoodNotify(this._gameplayers[pid], 0, 0)
+                }
             } else {
                 this._gameplayers[pid].node.setScale(0.5, 0.5, 1)
                 let x = (others - 0.5) * 375
