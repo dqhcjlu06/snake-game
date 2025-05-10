@@ -1,5 +1,7 @@
 declare class KcpSocket {
     constructor(url: string, port: number, dataShards?: number, parityShards?: number);
+    // 消息循环处理间隔时间（ms) 默认5
+    static WaitSleep: number;
     // onmessage data类型： 默认true
     isBinary: boolean;
     send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;

@@ -120,7 +120,6 @@ export class GameCtrl extends Component {
     }
 
     onEatFoodNotify(gameplay: GamePlay, x: number, y: number) {
-        console.log('eat foot', x, y)
         let pid = PlayerManager.getInstance().getPlayerId();
         let myGamePlayer = this._gameplayers[pid];
         if (myGamePlayer == gameplay) {
